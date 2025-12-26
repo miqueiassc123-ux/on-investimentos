@@ -1,95 +1,65 @@
-// LINK CORRIGIDO: Agora aponta para a publicação em CSV
-const URL_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS_3197l_5_q9h7u4zO-V1U6_A5mFw777_888/pub?output=csv"; 
-// NOTA: Se o link acima não funcionar, use este que gerei da sua planilha específica:
-const URL_FINAL = "https://docs.google.com/spreadsheets/d/1wUeiopzSGO7uqBzwHOXyDm1yrkwVcqHc55bLj1BLiqs/gviz/tq?tqx=out:csv";
+const imoveis = [
+    { nome: "Residencial Aurora", cidade: "Palhoça", bairro: "Pedra Branca", preco: 480000, tipo: "Apartamento", fase: "Lançamento", aluguel: 2800, valorizacao: 12, m2: 68 },
+    { nome: "Casa Bela Vista", cidade: "São José", bairro: "Barreiros", preco: 650000, tipo: "Casa", fase: "Pronto", aluguel: 3500, valorizacao: 10, m2: 115 },
+    { nome: "Terreno Horizonte", cidade: "Florianópolis", bairro: "Centro", preco: 300000, tipo: "Terreno", fase: "Lançamento", aluguel: 0, valorizacao: 15, m2: 216 },
+    { nome: "Smart Studio", cidade: "Florianópolis", bairro: "Trindade", preco: 420000, tipo: "Apartamento", fase: "Lançamento", aluguel: 2900, valorizacao: 18, m2: 32 },
+    { nome: "Vila dos Açores", cidade: "São José", bairro: "Campinas", preco: 580000, tipo: "Apartamento", fase: "Pronto", aluguel: 3100, valorizacao: 9, m2: 74 },
+    { nome: "Loteamento Solare", cidade: "Palhoça", bairro: "Pagani", preco: 250000, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 20, m2: 360 },
+    { nome: "Garden Residence", cidade: "São José", bairro: "Kobrasol", preco: 720000, tipo: "Apartamento", fase: "Lançamento", aluguel: 3800, valorizacao: 11, m2: 88 },
+    { nome: "Ponta das Canas Beach", cidade: "Florianópolis", bairro: "Ponta das Canas", preco: 890000, tipo: "Casa", fase: "Pronto", aluguel: 6500, valorizacao: 12, m2: 160 },
+    { nome: "Studio Tech", cidade: "Florianópolis", bairro: "Itacorubi", preco: 450000, tipo: "Apartamento", fase: "Lançamento", aluguel: 3200, valorizacao: 15, m2: 38 },
+    { nome: "Pátio das Flores", cidade: "Palhoça", bairro: "Pedra Branca", preco: 550000, tipo: "Apartamento", fase: "Pronto", aluguel: 3000, valorizacao: 8, m2: 72 },
+    { nome: "Terraço do Lago (2 dorm)", cidade: "Palhoça", bairro: "Pedra Branca", preco: 999000, tipo: "Apartamento", fase: "Lançamento", aluguel: 3000, valorizacao: 15, m2: 83 },
+    { nome: "Terraço do Lago (3 dorm)", cidade: "Palhoça", bairro: "Pedra Branca", preco: 1358800, tipo: "Apartamento", fase: "Lançamento", aluguel: 3800, valorizacao: 15, m2: 114 },
+    { nome: "Terraço do Lago (COB)", cidade: "Palhoça", bairro: "Pedra Branca", preco: 3900000, tipo: "Cobertura", fase: "Lançamento", aluguel: 7500, valorizacao: 15, m2: 221 },
+    { nome: "Terreno Praia do Sonho", cidade: "Palhoça", bairro: "Praia do Sonho", preco: 100000, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 10, m2: 300 },
+    { nome: "Terreno Forquilhas", cidade: "São José", bairro: "Forquilhas", preco: 169600, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 10, m2: 200 },
+    { nome: "Terreno Potecas", cidade: "São José", bairro: "Potecas", preco: 138500, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 10, m2: 250 },
+    { nome: "Terreno Vivenda São José", cidade: "São José", bairro: "Forquilhas", preco: 205000, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 10, m2: 360 }
+];
 
-let imoveisData = [];
+document.getElementById('buscar').addEventListener('click', function() {
+    const valorMax = document.getElementById('valor').value;
+    const cidadeSel = document.getElementById('cidade').value;
+    const tipoSel = document.getElementById('tipo').value;
+    const metragemMin = document.getElementById('metragem').value;
+    const faseSel = document.getElementById('fase').value;
 
-// Função para converter o formato da planilha para o site (ajustada para vircula/ponto)
-function csvToJSON(csv) {
-    const lines = csv.split("\n");
-    const result = [];
-    // Detecta se o Google usou vírgula ou ponto e vírgula como separador
-    const separador = lines[0].includes(";") ? ";" : ",";
-    const headers = lines[0].split(separador).map(h => h.replace(/"/g, "").trim());
-
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
-        const obj = {};
-        const currentline = lines[i].split(separador);
-
-        headers.forEach((header, s) => {
-            let value = currentline[s] ? currentline[s].replace(/"/g, "").trim() : "";
-            
-            // Tratamento especial para números (remove R$, pontos e converte vírgula em ponto)
-            if (["preco", "aluguel_estimado", "valorizacao_estimada"].includes(header)) {
-                let num = value.replace(/[R$\.\s]/g, "").replace(",", ".");
-                obj[header] = parseFloat(num) || 0;
-            } else {
-                obj[header] = value;
-            }
-        });
-        result.push(obj);
-    }
-    return result;
-}
-
-const container = document.getElementById('resultados');
-
-// Busca os dados na Web com o link correto
-fetch(URL_FINAL)
-    .then(res => res.text())
-    .then(csvText => {
-        imoveisData = csvToJSON(csvText);
-        console.log("Planilha carregada com sucesso!");
-    })
-    .catch(err => {
-        console.error(err);
-        container.innerHTML = '<p style="color:red">Erro ao carregar dados. Verifique sua conexão.</p>';
+    const resultados = imoveis.filter(imovel => {
+        return (valorMax === "" || imovel.preco <= valorMax) &&
+               (cidadeSel === "" || imovel.cidade === cidadeSel) &&
+               (tipoSel === "" || imovel.tipo === tipoSel) &&
+               (metragemMin === "" || imovel.m2 >= metragemMin) &&
+               (faseSel === "" || imovel.fase === faseSel);
     });
 
-// Evento do Botão
-document.getElementById('buscar').addEventListener('click', () => {
-    const valorMax = parseFloat(document.getElementById('valor').value);
-    const cidade = document.getElementById('cidade').value;
-    const tipo = document.getElementById('tipo').value;
-    const fase = document.getElementById('fase').value;
+    exibirResultados(resultados);
+});
 
-    if (!valorMax) {
-        alert("Digite um valor máximo para investir.");
+function exibirResultados(lista) {
+    const divPos = document.getElementById('resultados');
+    divPos.innerHTML = "";
+
+    if (lista.length === 0) {
+        divPos.innerHTML = "<p class='aviso'>Nenhum investimento encontrado com esses critérios.</p>";
         return;
     }
 
-    // Filtros combinados
-    let filtrados = imoveisData.filter(item => {
-        return item.preco <= valorMax &&
-               (cidade === "" || item.cidade === cidade) &&
-               (tipo === "" || item.tipo === tipo) &&
-               (fase === "" || item.fase === fase);
-    });
+    lista.forEach(imovel => {
+        // Cálculo de Score simples para a badge (Valorização + Aluguel)
+        const score = imovel.valorizacao + (imovel.aluguel > 0 ? 5 : 0);
 
-    // Ranking Score
-    filtrados.forEach(item => {
-        let yieldAnual = item.preco > 0 ? (item.aluguel_estimado * 12 / item.preco) * 100 : 0;
-        let bonusFase = item.fase === 'Lançamento' ? 10 : 0;
-        item.score = (item.valorizacao_estimada + yieldAnual + bonusFase).toFixed(2);
-    });
-
-    filtrados.sort((a, b) => b.score - a.score);
-
-    // Mostrar na tela
-    container.innerHTML = filtrados.length ? "" : "Nenhum imóvel encontrado para esses critérios.";
-    
-    filtrados.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'resultado-item';
-        div.innerHTML = `
-            <div class="score-badge">Score: ${item.score}</div>
-            <h3>${item.nome}</h3>
-            <p><strong>${item.tipo}</strong> - ${item.bairro} (${item.cidade})</p>
-            <p>Preço: R$ ${item.preco.toLocaleString('pt-BR')}</p>
-            <p>Fase: ${item.fase}</p>
+        divPos.innerHTML += `
+            <div class="resultado-item">
+                <div class="score-badge">TOP ${score}</div>
+                <h3>${imovel.nome}</h3>
+                <p><strong>📍 LOCAL:</strong> ${imovel.bairro} - ${imovel.cidade}</p>
+                <p><strong>💰 INVESTIMENTO:</strong> R$ ${imovel.preco.toLocaleString('pt-BR')}</p>
+                <p><strong>📏 METRAGEM:</strong> ${imovel.m2} m²</p>
+                <p><strong>🔑 FASE:</strong> ${imovel.fase}</p>
+                <p><strong>📈 VALORIZAÇÃO:</strong> ${imovel.valorizacao}% a.a.</p>
+                ${imovel.aluguel > 0 ? `<p><strong>💵 ALUGUEL EST.:</strong> R$ ${imovel.aluguel.toLocaleString('pt-BR')}</p>` : ''}
+            </div>
         `;
-        container.appendChild(div);
     });
-});
+}
