@@ -6,16 +6,17 @@
 
 body {
     font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-    background-color: #121212; /* Fundo Preto */
+    background-color: #121212;
     color: #ffffff;
     margin: 0;
     padding: 20px;
     display: flex;
     justify-content: center;
+    align-items: flex-start; /* Alinhado ao topo para facilitar rolagem */
 }
 
 .container {
-    background-color: #1e1e1e; /* Fundo Cinza Escuro */
+    background-color: #1e1e1e;
     padding: 40px;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -25,7 +26,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #ffcc00; /* Título Amarelo */
+    color: #ffcc00;
     font-size: 2rem;
     margin-bottom: 30px;
     text-transform: uppercase;
@@ -53,6 +54,7 @@ input, select {
     font-size: 1rem;
     outline: none;
     transition: border 0.3s;
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
 }
 
 input:focus, select:focus {
@@ -85,14 +87,15 @@ button:hover {
 }
 
 .resultado-item {
-    background-color: #ffcc00; /* Caixa Amarela conforme pedido */
-    color: #000; /* Texto preto para ler melhor no amarelo */
+    background-color: #ffcc00;
+    color: #000;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 12px;
     position: relative;
     transition: transform 0.3s;
     border: none;
+    overflow: hidden; /* Garante que nada saia do card */
 }
 
 .resultado-item:hover {
@@ -103,12 +106,16 @@ button:hover {
     margin: 0 0 10px 0;
     font-size: 1.3rem;
     color: #000;
+    padding-right: 90px; /* Espaço para a badge não cobrir o nome */
+    line-height: 1.2;
 }
 
 .resultado-item p {
-    margin: 4px 0;
+    margin: 6px 0;
     font-size: 0.95rem;
     font-weight: 500;
+    border-bottom: 1px solid rgba(0,0,0,0.05); /* Linha sutil separadora */
+    padding-bottom: 2px;
 }
 
 /* Badge de Score dentro do Card */
@@ -120,13 +127,38 @@ button:hover {
     color: #ffcc00;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 900;
+    text-transform: uppercase;
 }
 
 .aviso {
     text-align: center;
-    color: #666;
+    color: #b3b3b3;
     font-style: italic;
     margin-top: 20px;
+}
+
+/* --- AJUSTES PARA CELULAR (RESPONSIVIDADE) --- */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    .container {
+        padding: 20px;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+    .resultado-item h3 {
+        padding-right: 0; /* No mobile a badge vai para baixo */
+        font-size: 1.1rem;
+    }
+    .score-badge {
+        position: relative;
+        top: 0;
+        right: 0;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
 }
