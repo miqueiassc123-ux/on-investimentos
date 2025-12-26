@@ -1,0 +1,132 @@
+/* Paleta de Cores:
+   Fundo: #121212 (Preto) e #1e1e1e (Cinza Escuro)
+   Destaque: #ffcc00 (Amarelo Investimento)
+   Texto: #ffffff (Branco) e #b3b3b3 (Cinza Claro)
+*/
+
+body {
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background-color: #121212; /* Fundo Preto */
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    background-color: #1e1e1e; /* Fundo Cinza Escuro */
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 {
+    text-align: center;
+    color: #ffcc00; /* Título Amarelo */
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+label {
+    display: block;
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #b3b3b3;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Inputs e Selects Modernos */
+input, select {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 8px;
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #ffcc00;
+}
+
+/* Botão de Destaque */
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #ffcc00;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+button:hover {
+    background-color: #e6b800;
+    transform: translateY(-2px);
+}
+
+/* Lista de Resultados */
+#resultados {
+    margin-top: 40px;
+}
+
+.resultado-item {
+    background-color: #ffcc00; /* Caixa Amarela conforme pedido */
+    color: #000; /* Texto preto para ler melhor no amarelo */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    position: relative;
+    transition: transform 0.3s;
+    border: none;
+}
+
+.resultado-item:hover {
+    transform: scale(1.02);
+}
+
+.resultado-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    color: #000;
+}
+
+.resultado-item p {
+    margin: 4px 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Badge de Score dentro do Card */
+.score-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #000;
+    color: #ffcc00;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.aviso {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin-top: 20px;
+}

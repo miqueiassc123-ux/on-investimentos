@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca de Investimentos Imobiliários</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Buscador de Investimentos</h1>
+
+        <div class="filtros">
+            <label for="valor">Orçamento Máximo (R$)</label>
+            <input type="number" id="valor" placeholder="Ex: 500000">
+
+            <label for="cidade">Cidade</label>
+            <select id="cidade">
+                <option value="">Todas as cidades</option>
+                <option value="Palhoça">Palhoça</option>
+                <option value="São José">São José</option>
+                <option value="Florianópolis">Florianópolis</option>
+            </select>
+
+            <label for="tipo">Tipo de Imóvel</label>
+            <select id="tipo">
+                <option value="">Todos os tipos</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Casa">Casa</option>
+                <option value="Terreno">Terreno</option>
+            </select>
+
+            <label for="fase">Fase</label>
+            <select id="fase">
+                <option value="">Todas as fases</option>
+                <option value="Lançamento">Lançamento</option>
+                <option value="Pronto">Pronto</option>
+            </select>
+
+            <button id="buscar">Analisar Melhores Opções</button>
+        </div>
+
+        <div id="resultados">
+            </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
