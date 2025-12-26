@@ -1,42 +1,57 @@
-// Link da sua planilha publicado como CSV
+// Link da sua planilha
 const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTB7sm4v8PIispUaDI7eQfYbQqlMW0sf6qbEWzqrK5KA4G0WNRjQIS2TYP6UpohciNBtCi0VUbA-Y3q/pub?output=csv";
 
 let imoveis = [];
 
-// Função que busca os dados da planilha automaticamente
+// Função para limpar e converter números brasileiros/planilha para números JS
+function formatarMoedaParaNumero(valor) {
+    if (!valor) return 0;
+    
+    // Remove R$, espaços e qualquer coisa que não seja número, ponto ou vírgula
+    let limpo = valor.toString().replace(/[R$\s]/g, '');
+
+    // Se o número vier no formato 1.050.000,00 (padrão BR)
+    if (limpo.includes(',') && limpo.includes('.')) {
+        limpo = limpo.replace(/\./g, '').replace(',', '.');
+    } 
+    // Se vier apenas com vírgula (ex: 1050,50)
+    else if (limpo.includes(',')) {
+        limpo = limpo.replace(',', '.');
+    }
+
+    return parseFloat(limpo) || 0;
+}
+
 async function carregarDados() {
     try {
-        // Adicionamos um número aleatório ao final para evitar que o navegador use dados antigos (cache)
         const resposta = await fetch(`${urlPlanilha}&cachebuster=${new Date().getTime()}`);
         const csvText = await resposta.text();
         
-        // Converte o texto do CSV em uma lista de objetos que o JS entende
-        const linhas = csvText.split('\n').map(linha => linha.split(','));
-        const cabecalho = linhas[0];
+        // Divide as linhas e remove o cabeçalho
+        const linhas = csvText.split(/\r?\n/).map(linha => linha.split(','));
         
         imoveis = linhas.slice(1).map(linha => {
-            if (linha.length < 9) return null;
-            return {
-                nome: linha[0]?.trim(),
-                cidade: linha[1]?.trim(),
-                bairro: linha[2]?.trim(),
-                preco: parseFloat(linha[3]),
-                tipo: linha[4]?.trim(),
-                fase: linha[5]?.trim(),
-                aluguel: parseFloat(linha[6]) || 0,
-                valorizacao: parseFloat(linha[7]),
-                m2: parseFloat(linha[8])
-            };
-        }).filter(item => item !== null && !isNaN(item.preco));
+            if (linha.length < 9 || linha[0] === "") return null;
 
-        console.log("Banco de dados sincronizado com o Google Sheets!");
+            return {
+                nome: linha[0].trim(),
+                cidade: linha[1].trim(),
+                bairro: linha[2].trim(),
+                preco: formatarMoedaParaNumero(linha[3]),
+                tipo: linha[4].trim(),
+                fase: linha[5].trim(),
+                aluguel: formatarMoedaParaNumero(linha[6]),
+                valorizacao: formatarMoedaParaNumero(linha[7]),
+                m2: formatarMoedaParaNumero(linha[8])
+            };
+        }).filter(item => item !== null);
+
+        console.log("Dados sincronizados com sucesso!");
     } catch (erro) {
-        console.error("Erro ao conectar com a planilha:", erro);
-        document.getElementById('resultados').innerHTML = "<p class='aviso'>Erro ao carregar dados. Verifique sua conexão.</p>";
+        console.error("Erro ao carregar planilha:", erro);
     }
 }
 
-// Inicia a carga de dados ao abrir o site
 carregarDados();
 
 document.getElementById('buscar').addEventListener('click', function() {
@@ -62,15 +77,15 @@ function exibirResultados(lista) {
     divPos.innerHTML = "";
 
     if (lista.length === 0) {
-        divPos.innerHTML = "<p class='aviso'>Nenhum investimento encontrado com esses critérios.</p>";
+        divPos.innerHTML = "<p class='aviso'>Nenhum investimento encontrado.</p>";
         return;
     }
 
     lista.forEach(imovel => {
         const precoPorM2 = imovel.preco / imovel.m2;
-        
         let badgeTexto = `TOP ${imovel.valorizacao}%`;
-        if (imovel.tipo === "Chácara" && precoPorM2 < 100) {
+        
+        if (imovel.tipo === "Chácara" && precoPorM2 < 200) {
             badgeTexto = "OPORTUNIDADE";
         }
 
@@ -79,13 +94,9 @@ function exibirResultados(lista) {
                 <div class="score-badge">${badgeTexto}</div>
                 <h3>${imovel.nome}</h3>
                 <p><strong>📍 LOCAL:</strong> ${imovel.bairro} - ${imovel.cidade}</p>
-                <p><strong>💰 INVESTIMENTO:</strong> R$ ${imovel.preco.toLocaleString('pt-BR')}</p>
+                <p><strong>💰 INVESTIMENTO:</strong> R$ ${imovel.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                 <p><strong>📏 METRAGEM:</strong> ${imovel.m2.toLocaleString('pt-BR')} m²</p>
-                <p><strong>🏷️ PREÇO/M²:</strong> R$ ${precoPorM2.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                <p><strong>🏷️ PREÇO/M²:</strong> R$ ${precoPorM2.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 <p><strong>🔑 FASE:</strong> ${imovel.fase}</p>
                 <p><strong>📈 VALORIZAÇÃO:</strong> ${imovel.valorizacao}% a.a.</p>
-                ${imovel.aluguel > 0 ? `<p><strong>💵 ALUGUEL EST.:</strong> R$ ${imovel.aluguel.toLocaleString('pt-BR')}</p>` : ''}
-            </div>
-        `;
-    });
-}
+                ${imovel.aluguel > 0 ? `<p><strong>💵 ALUGUEL EST.:</strong> R$ ${imovel.aluguel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>` :
