@@ -1,52 +1,66 @@
-const imoveis = [
-    { nome: "Residencial Aurora", cidade: "Palhoça", bairro: "Pedra Branca", preco: 480000, tipo: "Apartamento", fase: "Lançamento", aluguel: 2800, valorizacao: 12, m2: 65 },
-    { nome: "Casa Bela Vista", cidade: "São José", bairro: "Barreiros", preco: 650000, tipo: "Casa", fase: "Pronto", aluguel: 3500, valorizacao: 10, m2: 120 },
-    { nome: "Terreno Horizonte", cidade: "Florianópolis", bairro: "Centro", preco: 300000, tipo: "Terreno", fase: "Lançamento", aluguel: 0, valorizacao: 15, m2: 216 },
-    { nome: "Smart Studio", cidade: "Florianópolis", bairro: "Trindade", preco: 420000, tipo: "Apartamento", fase: "Lançamento", aluguel: 2900, valorizacao: 18, m2: 35 },
-    { nome: "Loteamento Solare", cidade: "Palhoça", bairro: "Pagani", preco: 250000, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 20, m2: 360 },
-    { nome: "Terraço do Lago 2 dorms", cidade: "Palhoça", bairro: "Pedra Branca", preco: 999000, tipo: "Apartamento", fase: "Lançamento", aluguel: 3000, valorizacao: 15, m2: 85 },
-    { nome: "Terreno Praia do Sonho", cidade: "Palhoça", bairro: "Praia do Sonho", preco: 100000, tipo: "Terreno", fase: "Pronto", aluguel: 0, valorizacao: 10, m2: 300 },
-    // Adicione os demais seguindo este padrão...
-];
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca de Investimentos Imobiliários</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .whatsapp-float {
+            position: fixed; width: 60px; height: 60px; bottom: 40px; right: 40px;
+            background-color: #25d366; color: #FFF; border-radius: 50px;
+            text-align: center; font-size: 30px; box-shadow: 2px 2px 3px #999;
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: transform 0.3s ease;
+        }
+        .whatsapp-float:hover { transform: scale(1.1); color: #FFF; }
+        .whatsapp-float svg { fill: white; width: 35px; height: 35px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Buscador de Investimentos</h1>
 
-document.getElementById('buscar').addEventListener('click', function() {
-    const valorMax = document.getElementById('valor').value;
-    const cidadeSel = document.getElementById('cidade').value;
-    const tipoSel = document.getElementById('tipo').value;
-    const metragemMin = document.getElementById('metragem').value;
-    const faseSel = document.getElementById('fase').value;
+        <div class="filtros">
+            <label for="valor">Orçamento Máximo (R$)</label>
+            <input type="number" id="valor" placeholder="Ex: 500000">
 
-    const resultados = imoveis.filter(imovel => {
-        return (valorMax === "" || imovel.preco <= valorMax) &&
-               (cidadeSel === "" || imovel.cidade === cidadeSel) &&
-               (tipoSel === "" || imovel.tipo === tipoSel) &&
-               (metragemMin === "" || imovel.m2 >= metragemMin) &&
-               (faseSel === "" || imovel.fase === faseSel);
-    });
+            <label for="cidade">Cidade</label>
+            <select id="cidade">
+                <option value="">Todas as cidades</option>
+                <option value="Palhoça">Palhoça</option>
+                <option value="São José">São José</option>
+                <option value="Florianópolis">Florianópolis</option>
+            </select>
 
-    exibirResultados(resultados);
-});
+            <label for="tipo">Tipo de Imóvel</label>
+            <select id="tipo">
+                <option value="">Todos os tipos</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Casa">Casa</option>
+                <option value="Terreno">Terreno</option>
+            </select>
 
-function exibirResultados(lista) {
-    const divPos = document.getElementById('resultados');
-    divPos.innerHTML = "";
+            <label for="metragem">Metragem Mínima (m²)</label>
+            <input type="number" id="metragem" placeholder="Ex: 360">
 
-    if (lista.length === 0) {
-        divPos.innerHTML = "<p>Nenhum imóvel encontrado com esses filtros.</p>";
-        return;
-    }
+            <label for="fase">Fase</label>
+            <select id="fase">
+                <option value="">Todas as fases</option>
+                <option value="Lançamento">Lançamento</option>
+                <option value="Pronto">Pronto</option>
+            </select>
 
-    lista.forEach(imovel => {
-        divPos.innerHTML += `
-            <div class="card">
-                <h3>${imovel.nome}</h3>
-                <p><strong>Local:</strong> ${imovel.bairro} - ${imovel.cidade}</p>
-                <p><strong>Preço:</strong> R$ ${imovel.preco.toLocaleString('pt-BR')}</p>
-                <p><strong>Área:</strong> ${imovel.m2}m²</p>
-                <p><strong>Aluguel Est.:</strong> R$ ${imovel.aluguel}</p>
-                <p style="color: green;"><strong>Valorização:</strong> ${imovel.valorizacao}% ao ano</p>
-                <hr>
-            </div>
-        `;
-    });
-}
+            <button id="buscar">Analisar Melhores Opções</button>
+        </div>
+
+        <div id="resultados"></div>
+    </div>
+
+    <a href="https://wa.me/48999886083?text=Olá!" class="whatsapp-float" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+
+    <script src="script.js"></script>
+</body>
+</html>
